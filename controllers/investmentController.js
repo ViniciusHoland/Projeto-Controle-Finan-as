@@ -18,7 +18,7 @@ const createInvestmentForUser = async (req, res) => {
 
         return res.status(200).send(investment)
     }catch(error){
-        return res.status(500).send('not possible create investment')
+        return res.status(500).send('not possible create investment, please again')
     }
     
 }
