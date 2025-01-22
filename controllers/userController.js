@@ -1,47 +1,66 @@
+const User = require('../models/userModel')
 
-const users = [
-    {login: 'vinicius',
-    password: '123'
+
+const getUser = async (req, res) => {
+    try{
+        const users = await User.findAll()
+
+    res.status(200).send(users)
+    } catch (error){
+        res.status(500).send({error: 'not found all user'})
     }
-]
+    
 
-const getUser = (req,res) => {
+}
 
-    const { login , password } = req.body
+const loginUser = async (req,res) => {
 
-    const user = users.find(user => user.login === login)
+    try{
+        const {email, password } = req.body
 
-    if(user && user.password === password){
+        const user = await User.findOne({where: {email: email}})
 
-        console.log('authetic sucessfully')
-        res.status(200).json(user)
-    } else{
-        console.log('not found user')
-        res.status(404).json('not found user, please register')
+        if (user && user.password === password) {
+            console.log('user is register')
+            return res.status(200).send('user register, loading...')
+        } else{
+            console.log('user or password incorret')
+            return res.status(200).send('user or password incorret')
+        }
+
+    } catch(error){
+        res.status(500).send({error: 'Unable to login'})
+    }
+
+}
+
+const createdUser = async (req, res) => {
+
+    try {
+
+        const { name, email, password } = req.body
+
+        const user = await User.findOne({where: {email: email}})
+
+        if (user) {
+            console.log('user is register')
+            return res.status(200).json('User is already registered')
+        }
+
+        const newUser = await User.create({
+            name,
+            email,
+            password,
+        }) 
+
+        
+        res.status(201).send('Created user sucessfully')
+
+    } catch(error){
+        res.status(500).send({error: 'not possible created user'})
     }
 
 
 }
 
-const createdUser = (req,res) => {
-
-    const { login , password } = req.body
-
-    const user = users.find(user => user.login === login)
-
-    if(user){
-        console.log('user is register')
-        res.status(200).json('user is register')
-    } 
-
-    const newUser = {
-        login,
-        password
-    }
-
-    users.push(newUser)
-    res.status(201).json('Created user sucessfully')
-
-}
-
-module.exports = { getUser ,createdUser}
+module.exports = { getUser, createdUser, loginUser}
