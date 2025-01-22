@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const userRoute = require('./routes/userRoute')
+const categoryRoute = require('./routes/categoryRouter')
 
 const db = require('./models/db')
 
@@ -9,6 +10,7 @@ const PORT = 3033
 
 app.use('/', userRoute)
 app.use('/', userRoute)
+app.use('/', categoryRoute)
 
 
 
