@@ -1,7 +1,13 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, Sequelize } = require('sequelize');
 const db = require('./db');
 
 const User = db.define('User', {
+    id:{
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -20,5 +26,9 @@ const User = db.define('User', {
     createdAt: 'created_at',
     updatedAt: false,
 });
+
+// criar tabela somente se não existir
+User.sync()
+
 
 module.exports = User;
