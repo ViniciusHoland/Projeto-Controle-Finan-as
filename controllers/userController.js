@@ -36,7 +36,11 @@ const loginUser = async (req,res) => {
                 token: token,
             });
 
-        } else{
+        } else if(!user){
+            console.log('user not is register')
+            return res.status(200).send('user not is register')
+        }
+        else{
             console.log('user or password incorret')
             return res.status(200).send('user or password incorret')
         }

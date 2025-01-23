@@ -14,6 +14,7 @@ app.use('/', userRoute)
 app.use('/', userRoute)
 app.use('/', categoryRoute)
 app.use('/',investmentRouter)
+app.use('/',investmentRouter)
 
 
 
