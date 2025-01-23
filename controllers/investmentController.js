@@ -95,6 +95,38 @@ const getSearchInvestment = async (req,res) => {
 
 }
 
+const deleteInvestment = async (req,res) => {
+
+    try{
+
+        
+        const userId = req.userId
+        const investmentId = req.body.investmentId
+
+        if(!userId) {
+            return res.status(500).send('not found user')
+        }
+
+        const investment  = await Investment.findByPk(investmentId)
+
+        if (!investment) {
+            return res.status(404).send('Investment not found');
+        }
+
+        // Verifique se o investimento pertence ao usuário
+        if (investment.user_id !== userId) {
+            return res.status(403).send('Unauthorized to delete this investment');
+        }
+
+        await investment.destroy(); // Deletar o investimento
+
+        res.status(200).json({ message: 'Investment deleted successfully' })
+    } catch(error){
+        res.status(500).send('not possible delete investments')
+    }
+
+}
 
 
-module.exports = {createInvestmentForUser, getAllInvestments, getSearchInvestment}
+
+module.exports = {createInvestmentForUser, getAllInvestments, getSearchInvestment,deleteInvestment}
