@@ -6,6 +6,7 @@ const authenticate = require('../middlewares/authenticate')
 
 router.post('/investment', authenticate , investmentController.createInvestmentForUser)
 router.get('/investment',authenticate,investmentController.getAllInvestments)
+router.get('/investment/search', investmentController.getSearchInvestment)
 
 
 module.exports = router 

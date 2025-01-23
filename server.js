@@ -11,10 +11,10 @@ app.use(express.json())
 const PORT = 3033
 
 app.use('/', userRoute)
-app.use('/', userRoute)
 app.use('/', categoryRoute)
 app.use('/',investmentRouter)
-app.use('/',investmentRouter)
+
+
 
 
 

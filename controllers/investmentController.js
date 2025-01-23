@@ -1,6 +1,9 @@
 const User = require('../models/userModel')
 const Category = require('../models/categoryModel')
 const Investment = require('../models/investmentModel')
+const axios = require('axios')
+require('dotenv').config();
+
 
 const createInvestmentForUser = async (req, res) => {
 
@@ -53,4 +56,45 @@ const getAllInvestments = async (req,res) => {
 
 }
 
-module.exports = {createInvestmentForUser, getAllInvestments}
+const token = process.env.MEU_TOKEN
+
+async function searchApi(ticket){
+
+    const endpoint = `https://brapi.dev/api/quote/${ticket}?token=${token}`
+
+    try{
+        const response = await axios.get(endpoint)
+
+        return response.data
+    
+    } catch(error){
+        console.error('Erro ao fazer a solicitação:', error);
+
+    }
+   
+}
+
+const getSearchInvestment = async (req,res) => {
+
+    try{
+        const response = await searchApi('ITUB4')
+
+        if(!response){
+            return res.status(500).send('not found BrApi')
+        }
+
+        const stockData = response.results[0]
+        const stockPrice = stockData.regularMarketPrice
+
+        res.status(200).json(stockPrice)
+        return
+    } catch(error){
+        console.error('error search investment', error);
+
+    }
+
+}
+
+
+
+module.exports = {createInvestmentForUser, getAllInvestments, getSearchInvestment}
