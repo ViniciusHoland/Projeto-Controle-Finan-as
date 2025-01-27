@@ -3,6 +3,10 @@ const app = express()
 const userRoute = require('./routes/userRoute')
 const categoryRoute = require('./routes/categoryRouter')
 const investmentRouter = require('./routes/investmentRouter')
+const cors = require('cors');
+
+
+app.use(cors());
 
 const db = require('./models/db')
 require('dotenv').config();
@@ -13,8 +17,6 @@ const PORT = 3033
 app.use('/', userRoute)
 app.use('/', categoryRoute)
 app.use('/',investmentRouter)
-
-
 
 
 
