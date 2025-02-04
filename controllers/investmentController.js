@@ -11,9 +11,6 @@ const createInvestmentForUser = async (req, res) => {
         const { categoryId, investmentData } = req.body
         const userId = req.userId // ID do usuário obtido do token
 
-        console.log("Received userId:", userId);
-        console.log("Received data:", req.body);
-
         if(!categoryId || !investmentData){
 
             return res.status(400).send("Missing categoryId or investmentData");
@@ -29,12 +26,19 @@ const createInvestmentForUser = async (req, res) => {
         if(categoryId === 2 ){
 
             try{
-                const acaoCurrent = await getPriceAcao(investmentData.description)
+                const nameAcao = (investmentData.description || '').toString().toUpperCase()
+
+                const acaoCurrent = await getPriceAcao(nameAcao)
                 console.log("Stock price fetched:", acaoCurrent);
+
+                const amount = investmentData.price * quantity
+                const valuation = (acaoCurrent * quantity) - amount
 
                 if(!acaoCurrent){
                     return res.status(404).send("Stock not found");
                 }
+                investmentData.valuation = valuation
+                investmentData.amount = amount
                 investmentData.priceCurrent = acaoCurrent
             }catch (error) {
                 console.error("Error fetching stock price:", error);
@@ -49,7 +53,7 @@ const createInvestmentForUser = async (req, res) => {
             investmentData.priceCurrent = investmentData.price;
         }
 
-
+        (investmentData.description || '').toString().toUpperCase()
 
         // Cria o investimento relacionado ao usuário e à categoria
         const investment = await Investment.create({
@@ -72,6 +76,7 @@ const getAllInvestments = async (req,res) => {
     try{
 
         const userId = req.userId
+        console.log("Received userId:", userId);
 
         if(!userId) {
             return res.status(500).send('not found user')
