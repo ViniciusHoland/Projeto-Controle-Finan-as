@@ -11,9 +11,25 @@ const Investment = db.define('Investment', {
         allowNull: false,
         primaryKey: true,
     },
-    amount: {
+    price: {
         type: DataTypes.FLOAT,
         allowNull: false,
+    },
+    priceCurrent: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+    },
+    quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    amount: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+    },
+    valuation: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
     },
     description: {
         type: DataTypes.TEXT,

@@ -11,7 +11,46 @@ const createInvestmentForUser = async (req, res) => {
         const { categoryId, investmentData } = req.body
         const userId = req.userId // ID do usuário obtido do token
 
-        
+        console.log("Received userId:", userId);
+        console.log("Received data:", req.body);
+
+        if(!categoryId || !investmentData){
+
+            return res.status(400).send("Missing categoryId or investmentData");
+            
+        }
+
+        const quantity = investmentData.quantity || 1
+
+        if(!investmentData.price || !quantity){
+            return res.status(400).send("Missing required fields: price or quantity");
+        }
+
+        if(categoryId === 2 ){
+
+            try{
+                const acaoCurrent = await getPriceAcao(investmentData.description)
+                console.log("Stock price fetched:", acaoCurrent);
+
+                if(!acaoCurrent){
+                    return res.status(404).send("Stock not found");
+                }
+                investmentData.priceCurrent = acaoCurrent
+            }catch (error) {
+                console.error("Error fetching stock price:", error);
+                return res.status(500).send("Error fetching stock price");
+            }
+
+
+        }
+
+        // Define um valor padrão para priceCurrent se não for categoria 2
+        if (!investmentData.priceCurrent) {
+            investmentData.priceCurrent = investmentData.price;
+        }
+
+
+
         // Cria o investimento relacionado ao usuário e à categoria
         const investment = await Investment.create({
             ...investmentData,
@@ -21,6 +60,7 @@ const createInvestmentForUser = async (req, res) => {
 
         return res.status(200).json(investment)
     }catch(error){
+        console.error("Error creating investment:", error);
         return res.status(500).send('not possible create investment, please again')
     }
     
@@ -74,10 +114,34 @@ async function searchApi(ticket){
    
 }
 
+const getPriceAcao = async (ticketAcao) => {
+
+    try{
+
+        const response = await searchApi(ticketAcao)
+
+        if(!response){
+            return null;
+        }
+
+        const stockData = response.results[0]
+        return stockData.regularMarketPrice
+
+    }catch(error){
+        console.log("error to found investment")
+        return null; 
+    }
+
+
+}
+
 const getSearchInvestment = async (req,res) => {
 
     try{
-        const response = await searchApi('ITUB4')
+
+        const { ticketAcao} = req.body
+
+        const response = await searchApi(ticketAcao)
 
         if(!response){
             return res.status(500).send('not found BrApi')
@@ -87,7 +151,7 @@ const getSearchInvestment = async (req,res) => {
         const stockPrice = stockData.regularMarketPrice
 
         res.status(200).json(stockPrice)
-        return
+        return 
     } catch(error){
         console.error('error search investment', error);
 
@@ -129,4 +193,4 @@ const deleteInvestment = async (req,res) => {
 
 
 
-module.exports = {createInvestmentForUser, getAllInvestments, getSearchInvestment,deleteInvestment}
+module.exports = {createInvestmentForUser, getAllInvestments, getSearchInvestment, deleteInvestment}
